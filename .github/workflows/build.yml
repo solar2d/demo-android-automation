@@ -1,0 +1,40 @@
+name: Build Android App
+
+on:
+  workflow_dispatch:
+    inputs:
+      AppVersion:
+        description: 'Version Name'
+        required: true
+        default: '1.0'
+      AppVersionCode:
+        description: 'Version Code'
+        required: true
+        default: '1'
+      Solar2DBuild:
+        description: 'Solar2D Build Number'
+        required: true
+        default: '2021.3654'
+
+
+env:
+  APP_VERSION_NAME: '${{ github.event.inputs.AppVersion }}'
+  APP_VERSION_CODE: '${{ github.event.inputs.AppVersionCode }}'
+  S2D_BUILD_NAME: '${{ github.event.inputs.Solar2DBuild }}'
+
+
+jobs:
+  build:
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Android
+        run: Util/build.sh
+        env:
+          KEYSTORE_PASSWORD:  ${{ secrets.keystorePassword }}
+          KEYSTORE_ALIAS: ${{ secrets.keystoreAlias }}
+          KEYSTORE_ALIAS_PASSWORD: ${{ secrets.aliasPassword }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: AndroidBuild
+          path: Output/
